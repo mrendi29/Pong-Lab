@@ -1,5 +1,8 @@
 import pygame
-
+from pong.ball import Ball
+from pong.paddle import Paddle
+from random import randint
+from collections import namedtuple
 
 def main():
     pygame.init()
@@ -7,7 +10,13 @@ def main():
 
     WIDTH = 800
     HEIGHT = 400
+    BORDER = 15
+    VELOCITY = 5
+    FPS = 30
 
+    MyConstants = namedtuple("MyConstants",["WIDTH","HEIGHT","BORDER","VELOCITY","FPS"])
+
+    CONSTS = MyConstants(WIDTH,HEIGHT,BORDER,VELOCITY,FPS)
     # surface
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     # add a solid background as r,g,b:
@@ -19,22 +28,28 @@ def main():
     # Walls
     # Rect(surface, color, rect) -> Rect
     wcolor = pygame.Color("white")
-    BORDER = 15
+
+    ball_color = pygame.Color("yellow")
 
     # top wall
     pygame.draw.rect(screen, wcolor, pygame.Rect((0, 0), (WIDTH, BORDER)))
-    pygame.display.update()
-
     # left wall
     pygame.draw.rect(screen, wcolor, pygame.Rect((0, 0), (BORDER, HEIGHT)))
-    pygame.display.update()
-
     # bottom wall
     pygame.draw.rect(screen, wcolor, pygame.Rect((0, HEIGHT - BORDER), (WIDTH, BORDER)))
-    pygame.display.update()
 
+    ## Ball init
+    x0 = WIDTH - Ball.radius
+    y0 = HEIGHT // 2
+    vx0 = -VELOCITY
+    vy0 = randint(-VELOCITY,VELOCITY)
+    b0 = Ball(x0, y0, vx0, vy0, screen, ball_color, pygame.Color("Black"),CONSTS)
+
+    b0.show(ball_color)
+    pygame.display.update()
     # define a variable to control the main loop
     running = True
+    clock = pygame.time.Clock()
     # main loop
     while running:
         # event handling, gets all event from the event queue
@@ -43,6 +58,10 @@ def main():
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
                 running = False
+        pygame.display.update()
+        clock.tick(FPS)
+            # Ball
+        b0.update()
 
 
 if __name__ == "__main__":
